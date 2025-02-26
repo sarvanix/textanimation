@@ -27,7 +27,18 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isDarkMode = false;
   bool _isVisible = true;
   bool _showFrame = false;
+  bool _isImageVisible = false;
   Color _textColor = Colors.black;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        _isImageVisible = true; // Image fades in after half a second
+      });
+    });
+  }
 
   void toggleTheme() {
     setState(() {
@@ -91,6 +102,17 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AnimatedOpacity(
+                opacity: _isImageVisible ? 1.0 : 0.0,
+                duration: Duration(seconds: 2),
+                curve: Curves.easeInOut,
+                child: Image.network(
+                  "https://flutter.dev/assets/homepage/carousel/slide_1-bg-4552f8db7f17aa90d36bc2a5b07695bbd79c4e07a28fcd9a17ed8b7bffb19763.jpg",
+                  width: 200,
+                  height: 150,
+                ),
+              ),
+              SizedBox(height: 20),
+              AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: Duration(seconds: 1),
                 curve: Curves.easeInOut,
@@ -103,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       : null,
                   child: Text(
-                    "Hello, Flutter! 🌞🌙",
+                    "Hello, Flutter! 🖼✨",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
                   ),
                 ),
@@ -129,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(height: 20),
-              Text("Swipe Left ➡️ for Next Animation"),
+              Text("Swipe Left ➡ for Next Animation"),
             ],
           ),
         ),
