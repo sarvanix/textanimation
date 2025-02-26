@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+//sharu
 
 void main() {
   runApp(MyApp());
@@ -51,26 +51,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: AnimatedOpacity(
-              opacity: _isVisible ? 1.0 : 0.0,
-              duration: Duration(seconds: 1),
-              curve: Curves.easeInOut,
-              child: Text(
-                "Hello, Flutter! ✨",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity! < 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SecondScreen()),
+            );
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: AnimatedOpacity(
+                opacity: _isVisible ? 1.0 : 0.0,
+                duration: Duration(seconds: 1),
+                curve: Curves.easeInOut,
+                child: Text(
+                  "Hello, Flutter! ✨",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: toggleFade,
-            child: Text("Fade In/Out"),
-          ),
-        ],
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: toggleFade,
+              child: Text("Fade In/Out"),
+            ),
+            SizedBox(height: 20),
+            Text("Swipe Left ➡️ for Next Animation"),
+          ],
+        ),
       ),
     );
   }
