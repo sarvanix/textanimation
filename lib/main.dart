@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -5,33 +6,36 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system, // Auto-switch based on device setting
+      themeMode: ThemeMode.system,
       home: HomeScreen(),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isDarkMode = false;
+  bool _isVisible = true;
 
   void toggleTheme() {
     setState(() {
       isDarkMode = !isDarkMode;
+    });
+  }
+
+  void toggleFade() {
+    setState(() {
+      _isVisible = !_isVisible;
     });
   }
 
@@ -47,11 +51,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          "Welcome to Text Animation!",
-          style: TextStyle(fontSize: 24),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: AnimatedOpacity(
+              opacity: _isVisible ? 1.0 : 0.0,
+              duration: Duration(seconds: 1),
+              curve: Curves.easeInOut,
+              child: Text(
+                "Hello, Flutter! ✨",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: toggleFade,
+            child: Text("Fade In/Out"),
+          ),
+        ],
       ),
     );
   }
