@@ -82,52 +82,57 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: AnimatedOpacity(
-              opacity: _isVisible ? 1.0 : 0.0,
-              duration: Duration(seconds: 1),
-              curve: Curves.easeInOut,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: _showFrame
-                    ? BoxDecoration(
-                        border: Border.all(color: _textColor, width: 3),
-                        borderRadius: BorderRadius.circular(10),
-                      )
-                    : null,
-                child: Text(
-                  "Hello, Flutter! 🖼",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: toggleFade,
-            child: Text("Fade In/Out"),
-          ),
-          SizedBox(height: 20),
-          Row(
+      body: AnimatedContainer(
+        duration: Duration(seconds: 2),
+        curve: Curves.easeInOut,
+        color: isDarkMode ? Colors.black87 : Colors.white,
+        child: Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Show Frame"),
-              Switch(
-                value: _showFrame,
-                onChanged: (value) {
-                  setState(() {
-                    _showFrame = value;
-                  });
-                },
+              AnimatedOpacity(
+                opacity: _isVisible ? 1.0 : 0.0,
+                duration: Duration(seconds: 1),
+                curve: Curves.easeInOut,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: _showFrame
+                      ? BoxDecoration(
+                          border: Border.all(color: _textColor, width: 3),
+                          borderRadius: BorderRadius.circular(10),
+                        )
+                      : null,
+                  child: Text(
+                    "Hello, Flutter! 🌞🌙",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
+                  ),
+                ),
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: toggleFade,
+                child: Text("Fade In/Out"),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Show Frame"),
+                  Switch(
+                    value: _showFrame,
+                    onChanged: (value) {
+                      setState(() {
+                        _showFrame = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text("Swipe Left ➡️ for Next Animation"),
             ],
           ),
-          SizedBox(height: 20),
-          Text("Swipe Left ➡ for Next Animation"),
-        ],
+        ),
       ),
     );
   }
