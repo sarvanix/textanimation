@@ -23,21 +23,35 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool isDarkMode = false;
   bool _isVisible = true;
   bool _showFrame = false;
   bool _isImageVisible = false;
+  bool _isRotating = false;
   Color _textColor = Colors.black;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    );
+
     Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
         _isImageVisible = true; // Image fades in after half a second
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void toggleTheme() {
@@ -77,6 +91,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void toggleRotation() {
+    setState(() {
+      _isRotating = !_isRotating;
+      if (_isRotating) {
+        _controller.repeat();
+      } else {
+        _controller.stop();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,14 +126,20 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedOpacity(
-                opacity: _isImageVisible ? 1.0 : 0.0,
-                duration: Duration(seconds: 2),
-                curve: Curves.easeInOut,
-                child: Image.network(
-                  "https://flutter.dev/assets/homepage/carousel/slide_1-bg-4552f8db7f17aa90d36bc2a5b07695bbd79c4e07a28fcd9a17ed8b7bffb19763.jpg",
-                  width: 200,
-                  height: 150,
+              GestureDetector(
+                onTap: toggleRotation,
+                child: AnimatedOpacity(
+                  opacity: _isImageVisible ? 1.0 : 0.0,
+                  duration: Duration(seconds: 2),
+                  curve: Curves.easeInOut,
+                  child: RotationTransition(
+                    turns: _controller,
+                    child: Image.network(
+                      "https://flutter.dev/assets/homepage/carousel/slide_1-bg-4552f8db7f17aa90d36bc2a5b07695bbd79c4e07a28fcd9a17ed8b7bffb19763.jpg",
+                      width: 200,
+                      height: 150,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -125,8 +156,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       : null,
                   child: Text(
-                    "Hello, Flutter! 🖼✨",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
+                    "Hello, Flutter! 🔄✨",
+                    style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: _textColor),
                   ),
                 ),
               ),
@@ -151,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(height: 20),
-              Text("Swipe Left ➡ for Next Animation"),
+              Text("Swipe Left ➡️ for Next Animation"),
             ],
           ),
         ),
