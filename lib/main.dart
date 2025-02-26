@@ -4,7 +4,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 void main() {
   runApp(MyApp());
 }
-//sharuuu
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -25,40 +25,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   bool isDarkMode = false;
-  bool _isVisible = true;
+  bool _isTextVisible = true;
   bool _showFrame = false;
-  bool _isImageVisible = false;
   bool _isRotating = false;
   Color _textColor = Colors.black;
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _rotationController;
+  late AnimationController _buttonController;
+  late Animation<double> _buttonScale;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 150),
-      lowerBound: 0.9,
-      upperBound: 1.1,
-    )..addListener(() {
-        setState(() {});
-      });
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    // Rotation controller for the image
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
     );
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        _isImageVisible = true; // Image fades in after half a second
-      });
-    });
+    // Bounce effect for button
+    _buttonController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+      lowerBound: 0.9,
+      upperBound: 1.1,
+    );
+
+    _buttonScale = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _buttonController, curve: Curves.elasticOut),
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _rotationController.dispose();
+    _buttonController.dispose();
     super.dispose();
   }
 
@@ -68,11 +69,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
-  void toggleFade() {
-    controller.forward().then(() {
-      _controller.reverse();
+  void toggleTextFade() {
+    _buttonController.forward().then((_) {
+      _buttonController.reverse();
       setState(() {
-        _isVisible = !_isVisible;
+        _isTextVisible = !_isTextVisible;
       });
     });
   }
@@ -106,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() {
       _isRotating = !_isRotating;
       if (_isRotating) {
-        _controller.repeat();
+        _rotationController.repeat();
       } else {
-        _controller.stop();
+        _rotationController.stop();
       }
     });
   }
@@ -117,16 +118,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Text Animation App"),
+        title: Text("Flutter Animation App"),
         actions: [
-          IconButton(
-            icon: Icon(Icons.palette),
-            onPressed: pickColor,
-          ),
-          IconButton(
-            icon: Icon(isDarkMode ? Icons.nightlight_round : Icons.wb_sunny),
-            onPressed: toggleTheme,
-          ),
+          IconButton(icon: Icon(Icons.palette), onPressed: pickColor),
+          IconButton(icon: Icon(isDarkMode ? Icons.nightlight_round : Icons.wb_sunny), onPressed: toggleTheme),
         ],
       ),
       body: AnimatedContainer(
@@ -139,23 +134,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             children: [
               GestureDetector(
                 onTap: toggleRotation,
-                child: AnimatedOpacity(
-                  opacity: _isImageVisible ? 1.0 : 0.0,
-                  duration: Duration(seconds: 2),
-                  curve: Curves.easeInOut,
-                  child: RotationTransition(
-                    turns: _controller,
-                    child: Image.network(
-                      "https://flutter.dev/assets/homepage/carousel/slide_1-bg-4552f8db7f17aa90d36bc2a5b07695bbd79c4e07a28fcd9a17ed8b7bffb19763.jpg",
-                      width: 200,
-                      height: 150,
-                    ),
+                child: RotationTransition(
+                  turns: _rotationController,
+                  child: Image.network(
+                    "https://flutter.dev/assets/homepage/carousel/slide_1-bg-4552f8db7f17aa90d36bc2a5b07695bbd79c4e07a28fcd9a17ed8b7bffb19763.jpg",
+                    width: 200,
+                    height: 150,
                   ),
                 ),
               ),
               SizedBox(height: 20),
               AnimatedOpacity(
-                opacity: _isVisible ? 1.0 : 0.0,
+                opacity: _isTextVisible ? 1.0 : 0.0,
                 duration: Duration(seconds: 1),
                 curve: Curves.easeInOut,
                 child: Container(
@@ -167,16 +157,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         )
                       : null,
                   child: Text(
-                    "Hello, Flutter! 🎭✨",
+                    "Hello, Flutter! 🚀✨",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
                   ),
                 ),
               ),
               SizedBox(height: 20),
               ScaleTransition(
-                scale: _scaleAnimation,
+                scale: _buttonScale,
                 child: ElevatedButton(
-                  onPressed: toggleFade,
+                  onPressed: toggleTextFade,
                   child: Text("Bounce & Fade In/Out"),
                 ),
               ),
@@ -196,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ],
               ),
               SizedBox(height: 20),
-              Text("Swipe Left ➡ for Next Animation"),
+              Text("Tap Image to Rotate! ⬆️"),
             ],
           ),
         ),
