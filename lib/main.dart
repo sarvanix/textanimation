@@ -23,8 +23,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   bool isDarkMode = false;
   bool _isVisible = true;
   bool _showFrame = false;
@@ -32,13 +31,22 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isRotating = false;
   Color _textColor = Colors.black;
   late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: Duration(milliseconds: 150),
+      lowerBound: 0.9,
+      upperBound: 1.1,
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
     );
 
     Future.delayed(Duration(milliseconds: 500), () {
@@ -61,8 +69,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void toggleFade() {
-    setState(() {
-      _isVisible = !_isVisible;
+    controller.forward().then(() {
+      _controller.reverse();
+      setState(() {
+        _isVisible = !_isVisible;
+      });
     });
   }
 
@@ -156,18 +167,18 @@ class _HomeScreenState extends State<HomeScreen>
                         )
                       : null,
                   child: Text(
-                    "Hello, Flutter! 🔄✨",
-                    style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: _textColor),
+                    "Hello, Flutter! 🎭✨",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _textColor),
                   ),
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: toggleFade,
-                child: Text("Fade In/Out"),
+              ScaleTransition(
+                scale: _scaleAnimation,
+                child: ElevatedButton(
+                  onPressed: toggleFade,
+                  child: Text("Bounce & Fade In/Out"),
+                ),
               ),
               SizedBox(height: 20),
               Row(
@@ -185,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
               SizedBox(height: 20),
-              Text("Swipe Left ➡️ for Next Animation"),
+              Text("Swipe Left ➡ for Next Animation"),
             ],
           ),
         ),
